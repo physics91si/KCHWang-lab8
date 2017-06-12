@@ -11,21 +11,34 @@ import matplotlib.animation as animation
 
 # Modules you will need
 import numpy as np
-import particle
+from particle import Particle, Molecule
 
 # TODO: Implement this function
 def init_molecule():
     """Create Particles p1 and p2 inside boundaries and return a molecule
     connecting them"""
-
-    pass
+    p1 = Particle(np.array([0.2, 0.2]), 1)
+    p2 = Particle(np.array([0.8, 0.8]), 2)
+    spring_cos = 1
+    equil_len = 0.5
+    return Molecule(p1.pos, p2.pos, p1.m, p2.m, spring_cos, equil_len)
 
 
 # TODO: Implement this function
 def time_step(dt, mol):
     """Sets new positions and velocities of the particles attached to mol"""
+    F = mol.get_force()
+    delta_v_1 = F / mol.p1.m * dt
+    delta_v_2 = -F / mol.p2.m * dt
+    delta_pos_1 = mol.p1.vel * dt
+    delta_pos_2 = mol.p2.vel * dt
     
-    pass
+    mol.p1.vel += delta_v_1
+    mol.p2.vel += delta_v_2
+    mol.p1.pos += delta_pos_1
+    mol.p2.pos += delta_pos_2
+    
+    print('p1_pos:', mol.p1.pos[0], mol.p1.pos[1], 'p2_pos:', mol.p2.pos[0], mol.p2.pos[1])
 
 
 #############################################
@@ -39,6 +52,7 @@ def run_dynamics(n, dt, xlim=(0, 1), ylim=(0, 1)):
     # Animation stuff
     fig, ax = plt.subplots()
     line, = ax.plot((mol.p1.pos[0], mol.p2.pos[0]), (mol.p1.pos[1], mol.p2.pos[1]), '-o')
+    
     ax.clear()
     plt.xlim(xlim)
     plt.ylim(ylim)
